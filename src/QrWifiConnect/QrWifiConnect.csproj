@@ -14,7 +14,7 @@
     <SkipValidateMauiImplicitPackageReferences>true</SkipValidateMauiImplicitPackageReferences>
 
     <!-- App metadata (MAUI targets only) -->
-    <ApplicationTitle>QR WiFi Connect</ApplicationTitle>
+    <ApplicationTitle>QRWiFiConnect</ApplicationTitle>
     <ApplicationId>com.example.qrwificonnect</ApplicationId>
     <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
     <ApplicationVersion>1</ApplicationVersion>

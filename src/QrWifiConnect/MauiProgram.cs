@@ -21,6 +21,7 @@ public static class MauiProgram
         builder.Logging.SetMinimumLevel(LogLevel.Debug);
 #endif
 
+        builder.Services.AddSingleton<AppShell>();
         // Services — singletons
         builder.Services.AddSingleton<IQrParserService, QrParserService>();
         builder.Services.AddSingleton<ICameraPermissionService, CameraPermissionService>();
