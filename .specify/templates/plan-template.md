@@ -31,7 +31,13 @@
 
 *GATE: Must pass before Phase 0 research. Re-check after Phase 1 design.*
 
-[Gates determined based on constitution file]
+Verify the following gates against `.specify/memory/constitution.md` before proceeding:
+
+- [ ] **I. Security First** — Does this feature touch external input (QR payloads, URLs, deep-links), permissions, storage, or networking? If yes, document the threat model and validation strategy in the plan.
+- [ ] **II. UX Consistency** — Are loading, success, and error states defined for every async operation? Are accessibility requirements (labels, contrast, dynamic type) noted?
+- [ ] **III. Code Quality** — Is each new module scoped to a single responsibility? Is any duplication being introduced that should instead be extracted?
+- [ ] **IV. Privacy by Design** — Does this feature collect, store, or transmit scan payloads or user data? If yes, confirm on-device default and opt-in consent flow are planned.
+- [ ] **V. Testability** — Are unit tests planned for business logic? Are UI/integration tests planned for user-facing flows? Are external dependencies injectable/mockable?
 
 ## Project Structure
 
