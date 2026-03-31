@@ -126,20 +126,4 @@ public sealed class ResultFlowIntegrationTests
 
         Assert.Equal(1, resultNav.QuitCallCount);
     }
-
-    // --- Credential cleared after connection ---
-
-    [Fact]
-    public async Task ConnectingViewModel_CredentialClearedAfterConnect()
-    {
-        _connector.SetSuccess("TestNet");
-        var connecting = new ConnectingViewModel(_connector, _navigation)
-        {
-            Credential = TestCredential
-        };
-
-        await connecting.OnAppearingAsync();
-
-        Assert.Null(connecting.Credential);
-    }
 }

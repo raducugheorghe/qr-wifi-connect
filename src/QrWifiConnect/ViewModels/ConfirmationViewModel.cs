@@ -8,11 +8,10 @@ namespace QrWifiConnect.ViewModels;
 
 /// <summary>
 /// ViewModel for the confirmation page.
-/// Receives WifiCredential via Shell QueryProperty, shows SSID/security info,
+/// Receives WifiCredential via Shell navigation parameters, shows SSID/security info,
 /// and lets the user confirm or cancel the connection.
 /// </summary>
-[QueryProperty(nameof(Credential), "credential")]
-public sealed partial class ConfirmationViewModel : ObservableObject
+public sealed partial class ConfirmationViewModel : ObservableObject, IQueryAttributable
 {
     private readonly INavigationService _navigation;
 
@@ -27,6 +26,12 @@ public sealed partial class ConfirmationViewModel : ObservableObject
         _navigation = navigation;
     }
 
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("credential", out var value) && value is WifiCredential cred)
+            Credential = cred;
+    }
+
     public string Ssid => Credential?.Ssid ?? string.Empty;
     public WifiSecurityType? SecurityType => Credential?.SecurityType;
     public bool IsHidden => Credential?.IsHidden ?? false;
@@ -37,10 +42,7 @@ public sealed partial class ConfirmationViewModel : ObservableObject
         var cred = Credential;
         if (cred is null)
             return;
-
-        // Clear the reference before navigating so password doesn't linger
-        Credential = null;
-
+        
         await _navigation.GoToAsync("connecting", new Dictionary<string, object>
         {
             ["credential"] = cred

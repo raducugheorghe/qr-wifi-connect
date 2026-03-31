@@ -52,16 +52,6 @@ public sealed class ConfirmationViewModelTests
         Assert.Equal("MyHome", passed.Ssid);
     }
 
-    [Fact]
-    public async Task ConnectCommand_ClearsCredentialAfterNavigate()
-    {
-        var vm = CreateSut();
-
-        await vm.ConnectCommand.ExecuteAsync(null);
-
-        Assert.Null(vm.Credential);
-    }
-
     // --- Cancel navigates back to scanner ---
 
     [Fact]

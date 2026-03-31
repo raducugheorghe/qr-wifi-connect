@@ -93,7 +93,7 @@ public sealed class ScannerViewModelTests
 
         await vm.OnAppearingAsync();
 
-        Assert.Equal("//permissiondenied", _navigation.LastRoute);
+        Assert.Equal("permissiondenied", _navigation.LastRoute);
     }
 
     [Fact]

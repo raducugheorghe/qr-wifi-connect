@@ -8,23 +8,25 @@ namespace QrWifiConnect.ViewModels;
 
 /// <summary>
 /// ViewModel for the result page.
-/// Receives ConnectionResult and drives the success/failure UI states.
+/// Receives ConnectionResult via Shell navigation parameters and drives the success/failure UI states.
 /// </summary>
-[QueryProperty(nameof(ConnectionResult), "connectionResult")]
-public sealed partial class ResultViewModel : ObservableObject
+public sealed partial class ResultViewModel : ObservableObject, IQueryAttributable
 {
     private readonly INavigationService _navigation;
 
     [ObservableProperty]
-    [NotifyPropertyChangedFor(nameof(IsSuccess))]
-    [NotifyPropertyChangedFor(nameof(Ssid))]
-    [NotifyPropertyChangedFor(nameof(Reason))]
-    [NotifyPropertyChangedFor(nameof(IsTimeout))]
+
     private ConnectionResult? _connectionResult;
 
     public ResultViewModel(INavigationService navigation)
     {
         _navigation = navigation;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("connectionResult", out var value) && value is ConnectionResult result)
+            ConnectionResult = result;
     }
 
     public bool IsSuccess => ConnectionResult is ConnectionResult.SuccessResult;

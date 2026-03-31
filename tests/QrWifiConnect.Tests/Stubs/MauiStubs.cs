@@ -4,8 +4,9 @@
 // for type identity — Shell resolves them at runtime in the actual MAUI app.
 
 // ReSharper disable All
-#pragma warning disable CS9113 // suppress "parameter unused" for positional records
 namespace Microsoft.Maui.Controls;
 
-[AttributeUsage(AttributeTargets.Class, AllowMultiple = true, Inherited = false)]
-internal sealed class QueryPropertyAttribute(string name, string queryId) : Attribute;
+internal interface IQueryAttributable
+{
+    void ApplyQueryAttributes(IDictionary<string, object> query);
+}

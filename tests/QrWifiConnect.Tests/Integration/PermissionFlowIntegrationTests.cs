@@ -28,7 +28,7 @@ public sealed class PermissionFlowIntegrationTests
 
         await scanner.OnAppearingAsync();
 
-        Assert.Equal("//permissiondenied", navigation.LastRoute);
+        Assert.Equal("permissiondenied", navigation.LastRoute);
         Assert.Equal(ScanState.PermissionDenied, scanner.ScanState);
     }
 

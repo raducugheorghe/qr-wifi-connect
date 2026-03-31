@@ -69,7 +69,7 @@ public sealed partial class ScannerViewModel : ObservableObject
             ScanState = requested ? ScanState.Scanning : ScanState.PermissionDenied;
 
             if (ScanState == ScanState.PermissionDenied)
-                await _navigation.GoToAsync("//permissiondenied");
+                await _navigation.GoToAsync("permissiondenied");
         }
     }
 

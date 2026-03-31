@@ -100,6 +100,18 @@ public sealed class QrParserServiceTests
     // --- Malformed WIFI: payloads ---
 
     [Fact]
+    public void TryParse_FieldsInAlternativeOrder_ReturnsCredential()
+    {
+        // S and P appear before T — real-world QR codes may use any field order
+        var result = _sut.TryParse("WIFI:S:DIGI_guest;P:HrDDW3y;T:WPA;;");
+
+        Assert.NotNull(result);
+        Assert.Equal("DIGI_guest", result.Ssid);
+        Assert.Equal(WifiSecurityType.Wpa, result.SecurityType);
+        Assert.Equal("HrDDW3y", result.Password);
+    }
+
+    [Fact]
     public void TryParse_MissingSSID_ReturnsNull()
     {
         var result = _sut.TryParse("WIFI:T:WPA;P:pass;;");

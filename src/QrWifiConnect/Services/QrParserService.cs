@@ -6,7 +6,7 @@ namespace QrWifiConnect.Services;
 /// <summary>
 /// Parses raw QR code values into WiFi credentials using strict regex validation
 /// against the WIFI: URI schema (ZXing/Google standard).
-/// Format: WIFI:T:&lt;type&gt;;S:&lt;ssid&gt;;P:&lt;password&gt;;H:&lt;hidden&gt;;;
+/// Format: WIFI:&lt;fields&gt;;; — fields (T, S, P, H) may appear in any order.
 /// </summary>
 internal sealed partial class QrParserService : IQrParserService
 {
@@ -14,8 +14,9 @@ internal sealed partial class QrParserService : IQrParserService
     // Each field value is captured as literal text — semicolons and special characters
     // within quoted values are extracted verbatim and never interpreted as code.
     // Named groups: type, ssid, password (optional), hidden (optional).
+    // Fields may appear in any order; unknown fields are accepted and skipped.
     [GeneratedRegex(
-        @"^WIFI:(?:T:(?<type>[^;]*);)?S:(?<ssid>[^;]+);(?:P:(?<password>[^;]*);)?(?:H:(?<hidden>true|false);)?;$",
+        @"^WIFI:(?:(?:T:(?<type>[^;]*)|S:(?<ssid>[^;]+)|P:(?<password>[^;]*)|H:(?<hidden>true|false)|[^;]*);)*;$",
         RegexOptions.IgnoreCase | RegexOptions.Singleline,
         matchTimeoutMilliseconds: 1000)]
     private static partial Regex WifiUriRegex();

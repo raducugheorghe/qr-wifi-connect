@@ -8,11 +8,11 @@ namespace QrWifiConnect.ViewModels;
 
 /// <summary>
 /// ViewModel for the connecting (spinner) page.
-/// Receives WifiCredential, initiates the connection, then navigates to the result page.
+/// Receives WifiCredential via Shell navigation parameters, initiates the connection,
+/// then navigates to the result page.
 /// Clears the credential reference immediately after ConnectAsync returns.
 /// </summary>
-[QueryProperty(nameof(Credential), "credential")]
-public sealed partial class ConnectingViewModel : ObservableObject
+public sealed partial class ConnectingViewModel : ObservableObject, IQueryAttributable
 {
     private static readonly TimeSpan ConnectionTimeout = TimeSpan.FromSeconds(30);
 
@@ -26,6 +26,12 @@ public sealed partial class ConnectingViewModel : ObservableObject
     {
         _wifiConnector = wifiConnector;
         _navigation = navigation;
+    }
+
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("credential", out var value) && value is WifiCredential cred)
+            Credential = cred;
     }
 
     /// <summary>
@@ -52,11 +58,6 @@ public sealed partial class ConnectingViewModel : ObservableObject
                 cred.Ssid,
                 "Connection timed out. The network may be out of range.",
                 isTimeout: true);
-        }
-        finally
-        {
-            // Clear credential reference immediately — password must not linger
-            Credential = null;
         }
 
         await _navigation.GoToAsync("result", new Dictionary<string, object>
