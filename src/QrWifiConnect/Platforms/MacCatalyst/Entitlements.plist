@@ -8,5 +8,10 @@
 <dict>
 	<key>com.apple.security.app-sandbox</key>
 	<false/>
+	<!--
+	  NOTE: com.apple.developer.networking.HotspotConfiguration is an iOS-only entitlement
+	  and is NOT valid on Mac Catalyst. NEHotspotConfigurationManager is available on Mac Catalyst
+	  without a plist entitlement — the OS enforces access at runtime via TCC/privacy checks.
+	-->
 </dict>
 </plist>
