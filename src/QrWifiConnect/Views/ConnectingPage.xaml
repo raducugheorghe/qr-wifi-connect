@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:QrWifiConnect.ViewModels"
+             x:Class="QrWifiConnect.Views.ConnectingPage"
+             x:DataType="vm:ConnectingViewModel"
+             Title="Connecting"
+             AutomationId="ConnectingPage">
+
+    <VerticalStackLayout
+        Spacing="24"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+
+        <ActivityIndicator
+            IsRunning="True"
+            IsVisible="True"
+            HeightRequest="60"
+            WidthRequest="60"
+            AutomationId="ConnectingSpinner"
+            SemanticProperties.Description="Connecting to WiFi network, please wait" />
+
+        <Label
+            Text="Connecting…"
+            FontSize="18"
+            HorizontalOptions="Center"
+            AutomationId="ConnectingLabel"
+            SemanticProperties.Description="Attempting to connect to the WiFi network" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

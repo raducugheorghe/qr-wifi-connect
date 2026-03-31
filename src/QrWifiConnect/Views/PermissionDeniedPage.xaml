@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:QrWifiConnect.ViewModels"
+             x:Class="QrWifiConnect.Views.PermissionDeniedPage"
+             x:DataType="vm:PermissionDeniedViewModel"
+             Title="Camera Permission Required"
+             AutomationId="PermissionDeniedPage">
+
+    <VerticalStackLayout
+        Spacing="24"
+        Padding="32"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+
+        <!-- Camera icon -->
+        <Label
+            Text="📷"
+            FontSize="72"
+            HorizontalOptions="Center"
+            AutomationId="CameraIconLabel"
+            SemanticProperties.Description="Camera icon" />
+
+        <Label
+            Text="Camera Access Required"
+            FontSize="22"
+            FontAttributes="Bold"
+            HorizontalOptions="Center"
+            AutomationId="PermissionDeniedTitle"
+            SemanticProperties.Description="Camera access is required" />
+
+        <Label
+            Text="This app needs access to your camera to scan WiFi QR codes. Please open System Settings and enable camera access for this app."
+            FontSize="15"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            AutomationId="PermissionDeniedMessage"
+            SemanticProperties.Description="Camera permission is required to scan WiFi QR codes. Open System Settings to grant access." />
+
+        <Button
+            Text="Open System Settings"
+            Command="{Binding OpenSettingsCommand}"
+            HorizontalOptions="Center"
+            Margin="0,16,0,0"
+            AutomationId="OpenSettingsButton"
+            SemanticProperties.Description="Open System Settings to grant camera permission" />
+
+    </VerticalStackLayout>
+
+</ContentPage>

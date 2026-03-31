@@ -1,0 +1,45 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>13</LangVersion>
+    <IsPackable>false</IsPackable>
+    <IsTestProject>true</IsTestProject>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <!-- Root namespace matches the main project so types in shared source resolve -->
+    <RootNamespace>QrWifiConnect</RootNamespace>
+  </PropertyGroup>
+
+  <!--
+    Directly compile shared non-MAUI source files from the main project.
+    This avoids requiring the maui-maccatalyst workload to build tests.
+    The MAUI workload is only needed to build/run the app itself.
+  -->
+  <ItemGroup>
+    <Compile Include="..\..\src\QrWifiConnect\Models\*.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\Services\IQrParserService.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\Services\IWifiConnector.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\Services\ICameraPermissionService.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\Services\INavigationService.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\Services\QrParserService.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\ViewModels\ScannerViewModel.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\ViewModels\ConfirmationViewModel.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\ViewModels\ConnectingViewModel.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\ViewModels\ResultViewModel.cs" />
+    <Compile Include="..\..\src\QrWifiConnect\ViewModels\PermissionDeniedViewModel.cs" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.*" />
+    <PackageReference Include="xunit" Version="2.*" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.*">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="NSubstitute" Version="5.*" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.*" />
+  </ItemGroup>
+
+</Project>

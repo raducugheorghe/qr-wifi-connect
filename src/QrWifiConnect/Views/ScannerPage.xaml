@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:scanner="clr-namespace:BarcodeScanning;assembly=BarcodeScanning.Native.Maui"
+             xmlns:vm="clr-namespace:QrWifiConnect.ViewModels"
+             x:Class="QrWifiConnect.Views.ScannerPage"
+             x:DataType="vm:ScannerViewModel"
+             Title="Scan WiFi QR Code"
+             AutomationId="ScannerPage">
+
+    <Grid>
+
+        <!-- Live camera viewfinder (visible when scanning or paused) -->
+        <scanner:CameraView
+            x:Name="CameraViewControl"
+            AutomationId="CameraView"
+            SemanticProperties.Description="Live camera viewfinder for scanning QR codes"
+            BarcodeSymbologies="QRCode"
+            CameraEnabled="{Binding IsCameraEnabled}"
+            OnDetectionFinished="OnDetectionFinished"
+            IsVisible="{Binding IsCameraEnabled}"
+            HorizontalOptions="Fill"
+            VerticalOptions="Fill" />
+
+        <!-- Scanning overlay: viewfinder guide -->
+        <Frame
+            IsVisible="{Binding IsCameraEnabled}"
+            BorderColor="White"
+            BackgroundColor="Transparent"
+            CornerRadius="12"
+            WidthRequest="240"
+            HeightRequest="240"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            HasShadow="False"
+            SemanticProperties.Description="Align the QR code within this frame" />
+
+        <Label
+            IsVisible="{Binding IsCameraEnabled}"
+            Text="Point camera at a WiFi QR code"
+            TextColor="White"
+            FontSize="16"
+            HorizontalOptions="Center"
+            VerticalOptions="End"
+            Margin="0,0,0,60"
+            AutomationId="ScanInstructionLabel"
+            SemanticProperties.Description="Point the camera at a WiFi QR code to connect" />
+
+        <!-- Camera unavailable state -->
+        <VerticalStackLayout
+            IsVisible="{Binding IsCameraUnavailable}"
+            HorizontalOptions="Center"
+            VerticalOptions="Center"
+            Spacing="16"
+            Padding="32"
+            AutomationId="CameraUnavailablePanel"
+            SemanticProperties.Description="Camera unavailable panel">
+
+            <Label
+                Text="Camera Unavailable"
+                FontSize="22"
+                FontAttributes="Bold"
+                HorizontalOptions="Center"
+                AutomationId="CameraUnavailableTitle"
+                SemanticProperties.Description="Camera is currently unavailable" />
+
+            <Label
+                Text="The camera is being used by another application. Close other apps using the camera and try again."
+                FontSize="15"
+                HorizontalOptions="Center"
+                HorizontalTextAlignment="Center"
+                AutomationId="CameraUnavailableMessage"
+                SemanticProperties.Description="Camera is being used by another application" />
+
+        </VerticalStackLayout>
+
+    </Grid>
+
+</ContentPage>

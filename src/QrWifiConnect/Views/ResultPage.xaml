@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:QrWifiConnect.ViewModels"
+             x:Class="QrWifiConnect.Views.ResultPage"
+             x:DataType="vm:ResultViewModel"
+             Title="Result"
+             AutomationId="ResultPage">
+
+    <VerticalStackLayout
+        x:Name="RootLayout"
+        Spacing="24"
+        Padding="32"
+        HorizontalOptions="Center"
+        VerticalOptions="Center">
+
+        <VisualStateManager.VisualStateGroups>
+            <VisualStateGroupList>
+                <VisualStateGroup x:Name="ResultStates">
+
+                    <VisualState x:Name="Success">
+                        <VisualState.Setters>
+                            <Setter TargetName="ResultIcon" Property="Label.Text" Value="✓" />
+                            <Setter TargetName="ResultIcon" Property="Label.TextColor" Value="{StaticResource Success}" />
+                            <Setter TargetName="ResultTitle" Property="Label.Text" Value="Connected!" />
+                            <Setter TargetName="ResultMessage" Property="Label.Text" Value="" />
+                            <Setter TargetName="ResultMessage" Property="Label.IsVisible" Value="False" />
+                            <Setter TargetName="RetryButton" Property="Button.IsVisible" Value="False" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                    <VisualState x:Name="Failure">
+                        <VisualState.Setters>
+                            <Setter TargetName="ResultIcon" Property="Label.Text" Value="✗" />
+                            <Setter TargetName="ResultIcon" Property="Label.TextColor" Value="{StaticResource Failure}" />
+                            <Setter TargetName="ResultTitle" Property="Label.Text" Value="Connection Failed" />
+                            <Setter TargetName="ResultMessage" Property="Label.IsVisible" Value="True" />
+                            <Setter TargetName="RetryButton" Property="Button.IsVisible" Value="True" />
+                        </VisualState.Setters>
+                    </VisualState>
+
+                </VisualStateGroup>
+            </VisualStateGroupList>
+        </VisualStateManager.VisualStateGroups>
+
+        <!-- Status icon -->
+        <Label
+            x:Name="ResultIcon"
+            Text="?"
+            FontSize="72"
+            HorizontalOptions="Center"
+            AutomationId="ResultIcon"
+            SemanticProperties.Description="Connection result icon" />
+
+        <!-- Title -->
+        <Label
+            x:Name="ResultTitle"
+            Text="Result"
+            FontSize="24"
+            FontAttributes="Bold"
+            HorizontalOptions="Center"
+            AutomationId="ResultTitle"
+            SemanticProperties.Description="Connection result status" />
+
+        <!-- SSID -->
+        <Label
+            Text="{Binding Ssid}"
+            FontSize="18"
+            HorizontalOptions="Center"
+            AutomationId="ResultSsid"
+            SemanticProperties.Description="{Binding Ssid, StringFormat='Network: {0}'}" />
+
+        <!-- Failure reason -->
+        <Label
+            x:Name="ResultMessage"
+            Text="{Binding Reason}"
+            FontSize="15"
+            HorizontalOptions="Center"
+            HorizontalTextAlignment="Center"
+            AutomationId="ResultReason"
+            SemanticProperties.Description="{Binding Reason, StringFormat='Failure reason: {0}'}" />
+
+        <!-- Actions -->
+        <HorizontalStackLayout
+            Spacing="16"
+            HorizontalOptions="Center"
+            Margin="0,16,0,0">
+
+            <Button
+                x:Name="RetryButton"
+                Text="Retry"
+                Command="{Binding RetryCommand}"
+                BackgroundColor="{StaticResource Gray200}"
+                TextColor="{StaticResource Black}"
+                AutomationId="RetryButton"
+                SemanticProperties.Description="Retry scanning for a WiFi QR code" />
+
+            <Button
+                Text="Exit"
+                Command="{Binding ExitCommand}"
+                AutomationId="ExitButton"
+                SemanticProperties.Description="Exit the application" />
+
+        </HorizontalStackLayout>
+
+    </VerticalStackLayout>
+
+</ContentPage>
