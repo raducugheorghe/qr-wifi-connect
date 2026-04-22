@@ -5,7 +5,7 @@
 
 ## Summary
 
-macOS desktop application (C# / .NET MAUI, `net9.0-maccatalyst`) that activates the built-in camera via `BarcodeScanning.Native.Maui` (Apple Vision), continuously scans for QR codes, parses any detected `WIFI:` URI payload in-process, presents a confirmation dialog, and joins the WiFi network via CoreWLAN ObjC runtime interop — entirely offline, with zero credential persistence.
+macOS desktop application (C# / .NET MAUI, `net9.0-maccatalyst`) that activates the built-in camera via `BarcodeScanning.Native.Maui` (Apple Vision), continuously scans for QR codes, parses any detected `WIFI:` URI payload in-process, presents a confirmation dialog, and joins the WiFi network via a two-phase strategy: CoreWLAN ObjC interop for network scan/reachability check, then `/usr/sbin/networksetup` CLI for the actual join — entirely offline, with zero credential persistence.
 
 ## Technical Context
 
@@ -24,13 +24,13 @@ macOS desktop application (C# / .NET MAUI, `net9.0-maccatalyst`) that activates 
 
 *GATE: Pre-design evaluation (post-research re-check below)*
 
-- [x] **I. Security First** — QR payload is untrusted external input. `QrParserService` validates with a strict regex against the `WIFI:` schema; only known fields (SSID, SecurityType, Password, IsHidden) are extracted. Password is passed in-process to CoreWLAN OS API — never placed in CLI args, in a log, or in a `ToString()`. Threat model documented in [research.md §Threat Model](research.md).
+- [x] **I. Security First** — QR payload is untrusted external input. `QrParserService` validates with a strict regex against the `WIFI:` schema; only known fields (SSID, SecurityType, Password, IsHidden) are extracted. Password is passed in-process through `QrParserService` and `CoreWlanWifiConnector`. During the `networksetup` join phase it is passed as a CLI argument (no stdin/pipe interface to `networksetup` exists); it is momentarily visible to same-UID processes via `ps(1)` for the ~2 s until `networksetup` exits — it never appears in logs or stdout. Risk is bounded and documented in the `CoreWlanWifiConnector` class header. `WifiCredential.ToString()` never includes the password. Threat model documented in [research.md §Threat Model](research.md).
 - [x] **II. UX Consistency** — Loading state: `ConnectingPage` with `ActivityIndicator`; Success state: `ResultPage` (success variant, SSID + checkmark); Error state: `ResultPage` (failure variant, plain-language Reason + Retry). All interactive elements will carry `AutomationId` and `SemanticProperties.Description` for accessibility. `PermissionDeniedPage` handles the camera-denied branch.
 - [x] **III. Code Quality** — Each class has one responsibility: `QrParserService` (parsing only), `CoreWlanWifiConnector` (OS WiFi join only), ViewModels (per-page state only). `IWifiConnector` / `IQrParserService` / `ICameraPermissionService` keep platform code behind interfaces. YAGNI: no speculative features beyond the 5 defined user flows.
 - [x] **IV. Privacy by Design** — No disk writes at any point. No analytics/crash-reporting SDK. `WifiCredential` never serialised; overrides `ToString()` to omit password. Memory lifetime documented in [data-model.md](data-model.md).
 - [x] **V. Testability** — `QrParserService` is pure logic and covered by unit tests; ViewModels are tested with substituted services via `NSubstitute`; user-facing flows (scanner, result, and permission-denied paths) are additionally covered by integration tests that use fake scanner input and fake services instead of real camera hardware or live network access.
 
-*Post-design re-check*: No new violations introduced by the data model or service design.
+*Post-design re-check*: One bounded security trade-off identified during implementation: `networksetup` CLI requires the password as a process argument (no stdin interface). Risk is same-UID-only and transient (<2 s); decision documented in the `CoreWlanWifiConnector` class header comment.
 
 ## Project Structure
 
@@ -66,7 +66,9 @@ QrWifiConnect/
 │       │   ├── IQrParserService.cs
 │       │   ├── QrParserService.cs        parses WIFI: URI; regex-validated
 │       │   ├── IWifiConnector.cs
-│       │   └── ICameraPermissionService.cs
+│       │   ├── ICameraPermissionService.cs
+│       │   ├── INavigationService.cs     abstracts Shell navigation + QuitApplication()
+│       │   └── ShellNavigationService.cs thin wrapper around Shell.Current; enables VM testability
 │       ├── ViewModels/
 │       │   ├── ScannerViewModel.cs
 │       │   ├── ConfirmationViewModel.cs
@@ -91,16 +93,32 @@ QrWifiConnect/
         ├── QrParserServiceTests.cs
         ├── ViewModels/
         │   ├── ScannerViewModelTests.cs
+        │   ├── ScannerCameraUnavailableTests.cs
         │   ├── ConfirmationViewModelTests.cs
         │   └── ResultViewModelTests.cs
-        └── Fakes/
-            ├── FakeWifiConnector.cs
-            └── FakeCameraPermissionService.cs
+        ├── Integration/
+        │   ├── ScannerFlowIntegrationTests.cs
+        │   ├── PermissionFlowIntegrationTests.cs
+        │   └── ResultFlowIntegrationTests.cs
+        ├── Fakes/
+        │   ├── FakeWifiConnector.cs
+        │   ├── FakeCameraPermissionService.cs
+        │   └── FakeNavigationService.cs  tracks navigation history + QuitCallCount
+        └── Stubs/
+            └── MauiStubs.cs              minimal IQueryAttributable stub (net9.0 compile)
 ```
 
 **Structure Decision**: Single-project MAUI app (`src/QrWifiConnect`) with a co-located test project (`tests/QrWifiConnect.Tests`). The platform-specific WiFi connector lives exclusively in `Platforms/MacCatalyst/` using `#if MACCATALYST` guards. No multi-targeting or extra project heads required.
 
 ## Complexity Tracking
 
-> No constitution violations. No complexity justification required.
+> One bounded security trade-off: `CoreWlanWifiConnector` must pass the WiFi password as a
+> `networksetup` CLI argument (no stdin/pipe interface exists). Risk is same-UID-only and
+> transient (<2 s); fully documented in the class header comment.
+>
+> Two alternatives were ruled out during implementation:
+> - `CWInterface.associateToNetwork:password:error:` — returns `tmpErr (-32767)` on Mac Catalyst;
+>   airportd rejects XPC association requests from non-native processes on macOS 13+.
+> - `NEHotspotConfigurationManager` — compiles on Mac Catalyst but always returns
+>   `NEHotspotConfigurationError.Internal (8)`; the iOS neagent daemon is absent on macOS.
 
