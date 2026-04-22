@@ -1,6 +1,6 @@
 # QR WiFi Connect
 
-> 🤖 This app was vibecoded using [spec-kit](https://github.com/speckit) and [GitHub Copilot](https://github.com/features/copilot).
+> 🤖 This app was vibecoded using [spec-kit](https://github.com/github/spec-kit) and [GitHub Copilot](https://github.com/features/copilot).
 
 A **.NET MAUI Mac Catalyst** app that scans a WiFi QR code with the device camera and joins the encoded network automatically — no typing required.
 
