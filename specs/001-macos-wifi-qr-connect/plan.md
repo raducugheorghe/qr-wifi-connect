@@ -5,15 +5,15 @@
 
 ## Summary
 
-macOS desktop application (C# / .NET MAUI, `net9.0-maccatalyst`) that activates the built-in camera via `BarcodeScanning.Native.Maui` (Apple Vision), continuously scans for QR codes, parses any detected `WIFI:` URI payload in-process, presents a confirmation dialog, and joins the WiFi network via a two-phase strategy: CoreWLAN ObjC interop for network scan/reachability check, then `/usr/sbin/networksetup` CLI for the actual join — entirely offline, with zero credential persistence.
+macOS desktop application (C# / .NET MAUI, `net10.0-maccatalyst`) that activates the built-in camera via `BarcodeScanning.Native.Maui` (Apple Vision), continuously scans for QR codes, parses any detected `WIFI:` URI payload in-process, presents a confirmation dialog, and joins the WiFi network via a two-phase strategy: CoreWLAN ObjC interop for network scan/reachability check, then `/usr/sbin/networksetup` CLI for the actual join — entirely offline, with zero credential persistence.
 
 ## Technical Context
 
-**Language/Version**: C# 13 / .NET 9  
-**Framework**: .NET MAUI `net9.0-maccatalyst`  
+**Language/Version**: C# 13 / .NET 10  
+**Framework**: .NET MAUI `net10.0-maccatalyst`  
 **Primary Dependencies**: `BarcodeScanning.Native.Maui` 3.0.3 (QR scanning), `CommunityToolkit.Mvvm` 8.4.x (MVVM), `CommunityToolkit.Maui` (latest, helpers)  
 **Storage**: N/A — no persistence; all data is transient in-memory only  
-**Testing**: `xunit` + `NSubstitute` (unit + ViewModel tests; `net9.0` test project)  
+**Testing**: `xunit` + `NSubstitute` (unit + ViewModel tests; `net10.0` test project)  
 **Target Platform**: macOS 13 Ventura+ (Mac Catalyst)  
 **Project Type**: Desktop GUI application (single-window, 5 pages)  
 **Performance Goals**: QR code detected within 3 seconds under normal indoor lighting (SC-002); full scan-to-connect under 30 seconds (SC-001)  
@@ -54,7 +54,7 @@ QrWifiConnect/
 ├── QrWifiConnect.sln
 ├── src/
 │   └── QrWifiConnect/
-│       ├── QrWifiConnect.csproj          (net9.0-maccatalyst)
+│       ├── QrWifiConnect.csproj          (net10.0-maccatalyst)
 │       ├── MauiProgram.cs
 │       ├── App.xaml / App.xaml.cs
 │       ├── AppShell.xaml / AppShell.xaml.cs
@@ -89,7 +89,7 @@ QrWifiConnect/
 │               └── CoreWlanWifiConnector.cs   IWifiConnector via ObjCRuntime
 └── tests/
     └── QrWifiConnect.Tests/
-        ├── QrWifiConnect.Tests.csproj    (net9.0)
+        ├── QrWifiConnect.Tests.csproj    (net10.0)
         ├── QrParserServiceTests.cs
         ├── ViewModels/
         │   ├── ScannerViewModelTests.cs
@@ -105,7 +105,7 @@ QrWifiConnect/
         │   ├── FakeCameraPermissionService.cs
         │   └── FakeNavigationService.cs  tracks navigation history + QuitCallCount
         └── Stubs/
-            └── MauiStubs.cs              minimal IQueryAttributable stub (net9.0 compile)
+            └── MauiStubs.cs              minimal IQueryAttributable stub (net10.0 compile)
 ```
 
 **Structure Decision**: Single-project MAUI app (`src/QrWifiConnect`) with a co-located test project (`tests/QrWifiConnect.Tests`). The platform-specific WiFi connector lives exclusively in `Platforms/MacCatalyst/` using `#if MACCATALYST` guards. No multi-targeting or extra project heads required.
